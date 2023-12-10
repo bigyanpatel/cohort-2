@@ -30,4 +30,4 @@ npx jest filename.test.js
 ```
 
 ### Contributing
-I appreciate feedback, suggestions, or improvements on the solutions shared here. If you have any suggestions or improvements, feel free to create an issue or a pull request. Contributions that align with the repository's purpose are welcome.
+I appreciate feedback, suggestions, or improvements on the solutions shared here. If you have any suggestions or improvements, feel free to create an issue or a pull request. Contributions that align with the repository's purpose are welcome. 
