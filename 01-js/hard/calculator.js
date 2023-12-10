@@ -48,23 +48,118 @@ class Calculator {
     return this.result;
   }
 
+  // Helper function to get precedence of operators
+  static getPrecedence(operator) {
+    if (operator === '+' || operator === '-') {
+      return 1;
+    } else if (operator === '*' || operator === '/') {
+      return 2;
+    }
+    return 0;
+  }
+
+  // Helper function to perform arithmetic operations
+  static applyOperator(a, b, operator) {
+    switch (operator) {
+      case '+':
+        return a + b;
+      case '-':
+        return a - b;
+      case '*':
+        return a * b;
+      case '/':
+        if (b === 0) {
+          throw new Error('Division by zero');
+        }
+        return a / b;
+    }
+  }
+
+  // Function to convert infix expression to postfix expression
+  static infixToPostfix(expression) {
+    const operators = [];
+    const output = [];
+    const tokens = expression.replace(/\s+/g, '').split(/([+\-*/()])/).filter(token => token !== '');
+
+    tokens.forEach(token => {
+      if (!isNaN(token)) {
+        output.push(parseFloat(token));
+      } else if (token === '(') {
+        operators.push(token);
+      } else if (token === ')') {
+        while (operators.length && operators[operators.length - 1] !== '(') {
+          output.push(operators.pop());
+        }
+        operators.pop();
+      } else {
+        while (operators.length && Calculator.getPrecedence(operators[operators.length - 1]) >= Calculator.getPrecedence(token)) {
+          output.push(operators.pop());
+        }
+        operators.push(token);
+      }
+    });
+
+    while (operators.length) {
+      output.push(operators.pop());
+    }
+
+    return output;
+  }
+
+  // Function to calculate the result from postfix expression
+  static evaluatePostfix(postfixExpression) {
+    const stack = [];
+
+    postfixExpression.forEach(token => {
+      if (!isNaN(token)) {
+        stack.push(token);
+      } else {
+        const num2 = stack.pop();
+        const num1 = stack.pop();
+        stack.push(Calculator.applyOperator(num1, num2, token));
+      }
+    });
+
+    if (stack.length !== 1 || isNaN(stack[0])) {
+      throw new Error('Invalid arithmetic expression');
+    }
+
+    return stack.pop();
+  }
+
+  // Function to calculate the result of the expression
   calculate(expression) {
     const sanitizedExpression = expression.replace(/\s+/g, '');
-    const isValidExpression = /^[0-9+\-*/().\s]+$/.test(sanitizedExpression);
 
-    if (!isValidExpression) {
+    // Check for invalid characters in the expression
+    if (!/^[\d+\-*/().]+$/.test(sanitizedExpression)) {
       throw new Error('Invalid expression');
     }
 
-    try {
-      this.result = eval(sanitizedExpression);
-    } catch (error) {
-      throw new Error('Invalid arithmetic expression');
+    // Check for unbalanced parentheses using a stack
+    const stack = [];
+    for (let i = 0; i < sanitizedExpression.length; i++) {
+      const char = sanitizedExpression.charAt(i);
+      if (char === '(') {
+        stack.push(char);
+      } else if (char === ')') {
+        if (stack.length === 0 || stack.pop() !== '(') {
+          throw new Error('Invalid parentheses');
+        }
+      }
     }
+
+    if (stack.length !== 0) {
+      throw new Error('Invalid parentheses');
+    }
+
+    const postfixExpression = Calculator.infixToPostfix(sanitizedExpression);
+    this.result = Calculator.evaluatePostfix(postfixExpression);
   }
 }
 
-module.exports = Calculator;
+const calc = new Calculator();
 
+console.log(calc.calculate("(4 + 2) - 3"))
 
 module.exports = Calculator;
