@@ -36,3 +36,5 @@ blockingSleep(3000);
 
 // This code will execute after the blocking sleep is completed
 console.log("Blocking End");
+
+module.exports = sleep;

@@ -23,3 +23,5 @@ wait(3)
         // In case of an error, log the error to the console
         console.error("Rejected: ", error);
     });
+
+module.exports = { wait }
