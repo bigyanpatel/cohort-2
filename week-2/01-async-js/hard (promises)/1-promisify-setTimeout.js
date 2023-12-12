@@ -8,7 +8,7 @@ function wait(n) {
         // Using setTimeout to simulate a delay of 'n' seconds
         setTimeout(() => {
             // After 'n' seconds, resolve the promise with a message
-            resolve(`Resolved after ${n} seconds`);
+            resolve();
         }, n * 1000); // 'n' seconds converted to milliseconds (1 second = 1000 milliseconds)
     });
 }
