@@ -12,9 +12,39 @@ const app = express();
 // clears every one second
 
 let numberOfRequestsForUser = {};
+
+// Middleware to rate limit requests
+const rateLimitMiddleware = (req, res, next) => {
+  const userId = req.headers['user-id'];
+
+  // If user ID exists, check the number of requests made in the last second
+  if (userId) {
+    const currentTime = Date.now();
+    if (!numberOfRequestsForUser[userId]) {
+      numberOfRequestsForUser[userId] = [currentTime];
+    } else {
+      numberOfRequestsForUser[userId] = numberOfRequestsForUser[userId].filter(
+        (timestamp) => timestamp > currentTime - 1000
+      );
+      numberOfRequestsForUser[userId].push(currentTime);
+    }
+
+    // If the number of requests exceeds 5 in the last second, block the request
+    if (numberOfRequestsForUser[userId].length > 5) {
+      return res.status(404).json({ error: 'Too Many Requests' });
+    }
+  }
+
+  next();
+};
+
+// Clear the request count for each user every second
 setInterval(() => {
-    numberOfRequestsForUser = {};
-}, 1000)
+  numberOfRequestsForUser = {};
+}, 1000);
+
+// Apply the rate limiting middleware globally
+app.use(rateLimitMiddleware);
 
 app.get('/user', function(req, res) {
   res.status(200).json({ name: 'john' });
