@@ -23,4 +23,10 @@ app.get('/errorCount', function(req, res) {
   res.status(200).json({ errorCount });
 });
 
+// Error handling middleware at the end
+app.use((err, req, res, next) => {
+  errorCount++; // Increment error count on every exception
+  res.status(404).json({ error: 'Not Found' }); // Set status code to 404 for user visibility
+});
+
 module.exports = app;
