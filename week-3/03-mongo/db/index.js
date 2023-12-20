@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://bigyanpatel:Bigyan2023@price-tracker.7uy1ayr.mongodb.net/courses-assignment').then(res => {
+mongoose.connect(process.env.MONGO_URI).then(res => {
     console.log("Mongodb connected Successfully!");
 }).catch(err => {
     console.log(err.message);
